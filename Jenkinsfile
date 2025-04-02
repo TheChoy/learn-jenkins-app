@@ -8,101 +8,123 @@ pipeline {
 
     stages {
         stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
-                echo "🔧 กำลังกำหนดไฟล์ที่ต้องการ..."
+                echo "🔧 Verifying necessary files..."
                 sh '''
-                    # ตรวจสอบไฟล์ที่จำเป็น
-                    test -f index.html || { echo "❌ ไม่พบไฟล์ index.html!" && exit 1; }
-                    test -f netlify/functions/quote.js || { echo "❌ ขาดฟังก์ชัน quote.js!" && exit 1; }
-                    echo "✅ ไฟล์ครบทุกอย่างแล้ว!"
+                    # Checking for essential files
+                    test -f index.html || (echo "❌ index.html is missing!" && exit 1)
+                    test -f netlify/functions/quote.js || (echo "❌ Missing quote.js function" && exit 1)
+                    echo "✅ All required files are present."
                 '''
             }
         }
 
         stage('Code Quality Check') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
-                echo "🔍 กำลังกำหนดคุณภาพโค้ดด้วย ESLint..."
+                echo "🔍 Running ESLint for code quality analysis..."
                 script {
                     def lintResult = sh(
                         script: '''
-                            npm ci
-                            npx eslint . || echo "❌ พบข้อผิดพลาดในโค้ด!"
+                            npm install eslint
+                            npx eslint . || echo "❌ Found linting errors!"
                         ''',
                         returnStatus: true
                     )
                     if (lintResult != 0) {
-                        echo "⚠️ โค้ดมีข้อผิดพลาด แต่จะทำการรันต่อไปค่ะ"
+                        echo "⚠️ Linting finished with errors, but pipeline continues."
                     } else {
-                        echo "✅ โค้ดสวยงาม ไม่มีข้อผิดพลาด!"
+                        echo "✅ Code is lint-free."
                     }
                 }
             }
         }
 
         stage('Security Audit') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
-                echo "🔒 กำลังกำหนดการตรวจสอบความปลอดภัย..."
+                echo "🔒 Running security audit with npm..."
                 script {
                     def auditResult = sh(
                         script: '''
-                            npm ci
-                            npm audit --production || echo "❌ พบช่องโหว่ด้านความปลอดภัย!"
+                            npm install
+                            npm audit --production || echo "❌ Security vulnerabilities detected!"
                         ''',
                         returnStatus: true
                     )
                     if (auditResult != 0) {
-                        echo "⚠️ ตรวจสอบความปลอดภัยเสร็จแล้ว พบช่องโหว่ แต่จะทำการรันต่อไปค่ะ"
+                        echo "⚠️ Security audit completed with vulnerabilities, but continuing pipeline."
                     } else {
-                        echo "✅ ตรวจสอบความปลอดภัยเสร็จแล้ว ไม่มีช่องโหว่!"
+                        echo "✅ Security check passed."
                     }
                 }
             }
         }
 
         stage('Test') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
-                echo "🧪 กำลังทดสอบฟังก์ชัน quote.js..."
+                echo "🧪 Verifying if quote function loads correctly..."
                 sh '''
-                    node -e "require('./netlify/functions/quote.js'); console.log('✅ ฟังก์ชันโหลดสำเร็จแล้วค่ะ')"
+                    node -e "require('./netlify/functions/quote.js'); console.log('✅ Function loaded successfully')"
                 '''
             }
         }
 
         stage('Deploy') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
-                echo "🚀 กำลังกำหนดการ deploy ไปยัง Netlify..."
+                echo "🚀 Deploying to Netlify..."
                 sh '''
-                    # ตรวจสอบว่า node และ npm ติดตั้งได้หรือไม่
-                    node -v
-                    npm -v
-
-                    # ติดตั้ง netlify-cli ก่อนใช้งาน
-                    npm install netlify-cli --save-dev
-
-                    # ใช้ npx เพื่อเรียกคำสั่ง netlify-cli
-                    npx netlify-cli deploy \
-                        --auth=$AUTH_TOKEN \
-                        --site=$SITE_ID \
-                        --dir=. \
-                        --prod
+                    npm install netlify-cli
+                    node_modules/.bin/netlify deploy \
+                      --auth=$AUTH_TOKEN \
+                      --site=$SITE_ID \
+                      --dir=. \
+                      --prod
                 '''
             }
-}
-
+        }
 
         stage('Post-Deployment') {
             steps {
-                echo "✅ การ deploy เสร็จสมบูรณ์แล้วค่ะ เว็บไซต์ของคุณพร้อมใช้งาน!"
+                echo "✅ Deployment completed successfully! Your app is live."
             }
         }
     }
 
     post {
         success {
-            echo "🎉 การทำงานของ CI/CD pipeline สำเร็จเรียบร้อยแล้วค่ะ"
+            echo "🎉 CI/CD pipeline executed successfully."
         }
         failure {
-            echo "❌ pipeline ล้มเหลวค่ะ โปรดตรวจสอบ logs"
+            echo "❌ Pipeline failed. Please check the logs."
         }
     }
 }

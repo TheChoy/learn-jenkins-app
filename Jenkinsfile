@@ -17,10 +17,15 @@ pipeline {
             steps {
                 script {
                     echo "🔧 กำลังเตรียมโปรเจค..."
-                    sh '''
-                    # ติดตั้ง dependencies ที่จำเป็น
-                    npm ci
-                    '''
+                    try {
+                        sh '''
+                        # ใช้ npm ci เพื่อการติดตั้ง dependencies ที่ถูกต้องจาก package-lock.json
+                        npm ci
+                        '''
+                    } catch (e) {
+                        echo "❌ การติดตั้ง dependencies ล้มเหลว: ${e.getMessage()}"
+                        throw e
+                    }
                 }
             }
             post {
@@ -43,10 +48,15 @@ pipeline {
             steps {
                 script {
                     echo "🏗️ กำลังสร้างโปรเจค..."
-                    sh '''
-                    # สร้างโปรเจค React
-                    npx react-scripts build
-                    '''
+                    try {
+                        sh '''
+                        # สร้างโปรเจค React ด้วย npx react-scripts build
+                        npx react-scripts build
+                        '''
+                    } catch (e) {
+                        echo "❌ การสร้างโปรเจคล้มเหลว: ${e.getMessage()}"
+                        throw e
+                    }
                 }
             }
             post {
@@ -69,10 +79,15 @@ pipeline {
             steps {
                 script {
                     echo "🧪 กำลังทดสอบโปรเจค..."
-                    sh '''
-                    # ทดสอบโปรเจค
-                    npm test
-                    '''
+                    try {
+                        sh '''
+                        # รันการทดสอบ
+                        npm test
+                        '''
+                    } catch (e) {
+                        echo "❌ การทดสอบล้มเหลว: ${e.getMessage()}"
+                        throw e
+                    }
                 }
             }
             post {
@@ -95,11 +110,17 @@ pipeline {
             steps {
                 script {
                     echo "🚀 กำลัง deploy ไปที่ Netlify..."
-                    sh '''
-                    # ใช้ Netlify CLI ในการ deploy
-                    npx netlify deploy --prod --dir=build \
-                    --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
-                    '''
+                    try {
+                        // แนะนำให้ติดตั้ง netlify-cli ใน package.json
+                        sh '''
+                        npm install netlify-cli --save-dev
+                        npx netlify deploy --prod --dir=build \
+                        --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
+                        '''
+                    } catch (e) {
+                        echo "❌ การ deploy ไป Netlify ล้มเหลว: ${e.getMessage()}"
+                        throw e
+                    }
                 }
             }
             post {
@@ -131,7 +152,8 @@ pipeline {
                         vmstat 1 5 >> resource_report.txt
                         '''
                     } catch (e) {
-                        echo "❌ เกิดข้อผิดพลาดในการตรวจสอบทรัพยากร: ${e}"
+                        echo "❌ เกิดข้อผิดพลาดในการตรวจสอบทรัพยากร: ${e.getMessage()}"
+                        throw e
                     }
                 }
             }

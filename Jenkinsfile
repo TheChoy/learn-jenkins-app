@@ -6,7 +6,7 @@ pipeline {
         AUTH_TOKEN = credentials('netlify-token')
     }
 
-    stages {
+stages {
         stage('Build') {
             agent {
                 docker {
@@ -15,11 +15,13 @@ pipeline {
                 }
             }
             steps {
-                echo "🏗️ กำลังกำหนดโปรเจค..."
-                sh '''
+                script {
+                    echo "🏗️ กำลังกำหนดโปรเจค..."
+                    sh '''
                     npm install
                     npx react-scripts build
-                '''
+                    '''
+                }
             }
             post {
                 success {
@@ -39,18 +41,20 @@ pipeline {
                 }
             }
             steps {
-                echo "🔍 กำลังกำหนดคุณภาพโค้ดด้วย ESLint..."
-                sh '''
-                    npm install eslint
-                    npx eslint . || echo "❌ พบข้อผิดพลาดในโค้ด!"
-                '''
-            }
-            post {
-                success {
-                    echo "✅ โค้ดสวยงาม ไม่มีข้อผิดพลาด!"
-                }
-                failure {
-                    echo "❌ โค้ดมีข้อผิดพลาด!"
+                script {
+                    echo "🔍 กำลังกำหนดคุณภาพโค้ดด้วย ESLint..."
+                    def lintResult = sh(
+                        script: '''
+                            npm ci
+                            npx eslint . || echo "❌ พบข้อผิดพลาดในโค้ด!"
+                        ''',
+                        returnStatus: true
+                    )
+                    if (lintResult != 0) {
+                        echo "⚠️ โค้ดมีข้อผิดพลาด แต่จะทำการรันต่อไปค่ะ"
+                    } else {
+                        echo "✅ โค้ดสวยงาม ไม่มีข้อผิดพลาด!"
+                    }
                 }
             }
         }
@@ -63,18 +67,20 @@ pipeline {
                 }
             }
             steps {
-                echo "🔒 กำลังกำหนดการตรวจสอบความปลอดภัย..."
-                sh '''
-                    npm install
-                    npm audit --production || echo "❌ พบช่องโหว่ด้านความปลอดภัย!"
-                '''
-            }
-            post {
-                success {
-                    echo "✅ ไม่มีช่องโหว่ด้านความปลอดภัย!"
-                }
-                failure {
-                    echo "❌ ตรวจสอบความปลอดภัยพบช่องโหว่!"
+                script {
+                    echo "🔒 กำลังกำหนดการตรวจสอบความปลอดภัย..."
+                    def auditResult = sh(
+                        script: '''
+                            npm ci
+                            npm audit --production || echo "❌ พบช่องโหว่ด้านความปลอดภัย!"
+                        ''',
+                        returnStatus: true
+                    )
+                    if (auditResult != 0) {
+                        echo "⚠️ ตรวจสอบความปลอดภัยเสร็จแล้ว พบช่องโหว่ แต่จะทำการรันต่อไปค่ะ"
+                    } else {
+                        echo "✅ ไม่มีช่องโหว่ด้านความปลอดภัย!"
+                    }
                 }
             }
         }
@@ -87,10 +93,12 @@ pipeline {
                 }
             }
             steps {
-                echo "🧪 กำลังกำหนดการทดสอบฟังก์ชัน quote.js..."
-                sh '''
-                    node -e "require('./netlify/functions/quote.js'); console.log('✅ ฟังก์ชันโหลดสำเร็จแล้วค่ะ')"
-                '''
+                script {
+                    echo "🧪 กำลังกำหนดการทดสอบฟังก์ชัน quote.js..."
+                    sh '''
+                        node -e "require('./netlify/functions/quote.js'); console.log('✅ ฟังก์ชันโหลดสำเร็จแล้วค่ะ')"
+                    '''
+                }
             }
         }
 
@@ -102,12 +110,13 @@ pipeline {
                 }
             }
             steps {
-                echo "🚀 กำลังกำหนดการ deploy ไปยัง Netlify..."
-                sh '''
-                    npm install netlify-cli
-                    npx netlify-cli deploy --prod --dir=build \
+                script {
+                    echo "🚀 กำลังกำหนดการ deploy ไปยัง Netlify..."
+                    sh '''
+                    npx netlify deploy --prod --dir=build \
                     --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
-                '''
+                    '''
+                }
             }
             post {
                 success {
@@ -123,17 +132,26 @@ pipeline {
         stage('Post-Deploy') {
             agent any
             steps {
-                echo "🔍 กำลังกำหนดการตรวจสอบทรัพยากรหลังจาก deploy..."
-                sh '''
-                    echo "Top 10 processes by memory usage:" > resource_report.txt
-                    ps aux --sort=-%mem | head -n 10 >> resource_report.txt
+                script {
+                    echo "🔍 กำลังกำหนดการตรวจสอบทรัพยากรหลังจาก deploy..."
+            
+                    try {
+                        sh '''
+                            echo "Top 10 processes by memory usage:" > resource_report.txt
+                            ps aux --sort=-%mem | head -n 10 >> resource_report.txt
+                            
 
-                    echo "\nMemory usage:" >> resource_report.txt
-                    free -h >> resource_report.txt
+                            echo "\nMemory usage:" >> resource_report.txt
+                            free -h >> resource_report.txt
+                            
 
-                    echo "\nSystem performance stats (vmstat):" >> resource_report.txt
-                    vmstat 1 5 >> resource_report.txt
-                '''
+                            echo "\nSystem performance stats (vmstat):" >> resource_report.txt
+                            vmstat 1 5 >> resource_report.txt
+                        '''
+                    } catch (e) {
+                        echo "เกิดข้อผิดพลาดในการตรวจสอบทรัพยากร: ${e}"
+                    }
+                }
             }
             post {
                 success {

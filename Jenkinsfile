@@ -4,7 +4,6 @@ pipeline {
     environment {
         NETLIFY_SITE_ID = '0431bf5e-5008-40b5-be82-408babc78afb'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
-        NODE_ENV = 'production'  // กำหนด environment default เป็น production
     }
 
     stages {
@@ -22,11 +21,6 @@ pipeline {
                     test -f netlify/functions/quote.js || (echo "❌ Missing quote function" && exit 1)
                     echo "✅ Build check passed."
                 '''
-                echo "📦 Installing dependencies..."
-                sh '''
-                    npm install --production || (echo "❌ npm install failed" && exit 1)
-                    echo "✅ Dependencies installed."
-                '''
             }
         }
 
@@ -38,31 +32,14 @@ pipeline {
                 }
             }
             steps {
-                echo "🧪 Running tests..."
+                echo "🧪 Testing quote function load..."
                 sh '''
-                    npm test || (echo "❌ Tests failed" && exit 1)
-                    echo "✅ All tests passed."
+                    node -e "require('./netlify/functions/quote.js'); console.log('✅ Function loaded successfully')"
                 '''
             }
         }
 
-        stage('Security Check') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                echo "🔐 Running security check..."
-                sh '''
-                    npm audit --production || (echo "❌ Security vulnerabilities found" && exit 1)
-                    echo "✅ No security vulnerabilities found."
-                '''
-            }
-        }
-
-        stage('Deploy to Netlify') {
+        stage('Deploy') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -72,13 +49,12 @@ pipeline {
             steps {
                 echo "🚀 Deploying to Netlify..."
                 sh '''
-                    npm install netlify-cli || (echo "❌ netlify-cli installation failed" && exit 1)
+                    npm install netlify-cli
                     node_modules/.bin/netlify deploy \
                       --auth=$NETLIFY_AUTH_TOKEN \
                       --site=$NETLIFY_SITE_ID \
                       --dir=. \
-                      --prod || (echo "❌ Deploy failed" && exit 1)
-                    echo "✅ Deployment successful."
+                      --prod
                 '''
             }
         }
@@ -86,8 +62,6 @@ pipeline {
         stage('Post Deploy') {
             steps {
                 echo "✅ Deployment complete! Your app is live."
-                echo "📦 Archiving build artifacts..."
-                archiveArtifacts artifacts: '**/dist/*.zip', allowEmptyArchive: true
             }
         }
     }

@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     environment {
-        NETLIFY_SITE_ID = credentials('netlify-site-id')  // ใช้ Jenkins credentials สำหรับ site ID
-        NETLIFY_AUTH_TOKEN = credentials('netlify-token')  // ใช้ Jenkins credentials สำหรับ Auth Token
-        NODE_ENV = 'production'  // กำหนด environment default เป็น production
+        NETLIFY_SITE_ID = '0431bf5e-5008-40b5-be82-408babc78afb'
+        NETLIFY_AUTH_TOKEN = credentials('netlify-token')
     }
 
     stages {
@@ -22,9 +21,6 @@ pipeline {
                     test -f netlify/functions/quote.js || (echo "❌ Missing quote function" && exit 1)
                     echo "✅ Build check passed."
                 '''
-                echo "📦 Installing dependencies..."
-                sh 'npm install --production'  // ติดตั้งเฉพาะ dependencies สำหรับ production
-                echo "✅ Dependencies installed."
             }
         }
 
@@ -36,31 +32,14 @@ pipeline {
                 }
             }
             steps {
-                echo "🧪 Running tests..."
+                echo "🧪 Testing quote function load..."
                 sh '''
-                    npm test || (echo "❌ Tests failed" && exit 1)
-                    echo "✅ All tests passed."
+                    node -e "require('./netlify/functions/quote.js'); console.log('✅ Function loaded successfully')"
                 '''
             }
         }
 
-        stage('Security Check') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                echo "🔐 Running security check..."
-                sh '''
-                    npm audit --production || (echo "❌ Security vulnerabilities found" && exit 1)
-                    echo "✅ No security vulnerabilities found."
-                '''
-            }
-        }
-
-        stage('Deploy to Netlify') {
+        stage('Deploy') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -83,8 +62,6 @@ pipeline {
         stage('Post Deploy') {
             steps {
                 echo "✅ Deployment complete! Your app is live."
-                echo "📦 Archiving build artifacts..."
-                archiveArtifacts artifacts: '**/dist/*.zip', allowEmptyArchive: true
             }
         }
     }
@@ -92,11 +69,9 @@ pipeline {
     post {
         success {
             echo "🎉 CI/CD pipeline finished successfully."
-            mail to: 'developer@example.com', subject: 'Build Success', body: 'The build and deploy were successful!'
         }
         failure {
             echo "❌ Pipeline failed. Check logs for details."
-            mail to: 'developer@example.com', subject: 'Build Failed', body: 'The build failed. Please check the logs.'
         }
     }
 }

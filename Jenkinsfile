@@ -15,14 +15,11 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    echo "🏗️ กำลังกำหนดโปรเจค..."
-                    sh '''
-                    set -x  # เปิดการแสดง log แบบละเอียด
+                echo "🏗️ กำลังกำหนดโปรเจค..."
+                sh '''
                     npm install
                     npx react-scripts build
-                    '''
-                }
+                '''
             }
             post {
                 success {
@@ -34,6 +31,69 @@ pipeline {
             }
         }
 
+        stage('Code Quality Check') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                echo "🔍 กำลังกำหนดคุณภาพโค้ดด้วย ESLint..."
+                sh '''
+                    npm install eslint
+                    npx eslint . || echo "❌ พบข้อผิดพลาดในโค้ด!"
+                '''
+            }
+            post {
+                success {
+                    echo "✅ โค้ดสวยงาม ไม่มีข้อผิดพลาด!"
+                }
+                failure {
+                    echo "❌ โค้ดมีข้อผิดพลาด!"
+                }
+            }
+        }
+
+        stage('Security Audit') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                echo "🔒 กำลังกำหนดการตรวจสอบความปลอดภัย..."
+                sh '''
+                    npm install
+                    npm audit --production || echo "❌ พบช่องโหว่ด้านความปลอดภัย!"
+                '''
+            }
+            post {
+                success {
+                    echo "✅ ไม่มีช่องโหว่ด้านความปลอดภัย!"
+                }
+                failure {
+                    echo "❌ ตรวจสอบความปลอดภัยพบช่องโหว่!"
+                }
+            }
+        }
+
+        stage('Test') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                echo "🧪 กำลังกำหนดการทดสอบฟังก์ชัน quote.js..."
+                sh '''
+                    node -e "require('./netlify/functions/quote.js'); console.log('✅ ฟังก์ชันโหลดสำเร็จแล้วค่ะ')"
+                '''
+            }
+        }
+
         stage('Deploy to Netlify') {
             agent {
                 docker {
@@ -42,18 +102,12 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    echo "🚀 กำลังกำหนดการ deploy ไปยัง Netlify..."
-                    sh '''
-                    set -x  # เปิดการแสดง log แบบละเอียด
-                    npm install netlify-cli  # ติดตั้ง netlify-cli
-                    which netlify-cli || { echo "❌ netlify-cli ไม่พบ!" && exit 1; }  # ตรวจสอบว่า netlify-cli ติดตั้งสำเร็จหรือไม่
-                    
-                    # ใช้ npx เพื่อเรียกคำสั่ง netlify-cli
+                echo "🚀 กำลังกำหนดการ deploy ไปยัง Netlify..."
+                sh '''
+                    npm install netlify-cli
                     npx netlify-cli deploy --prod --dir=build \
                     --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
-                    '''
-                }
+                '''
             }
             post {
                 success {
@@ -69,24 +123,17 @@ pipeline {
         stage('Post-Deploy') {
             agent any
             steps {
-                script {
-                    echo "🔍 กำลังกำหนดการตรวจสอบทรัพยากรหลังจาก deploy..."
-                    try {
-                        sh '''
-                            set -x  # เปิดการแสดง log แบบละเอียด
-                            echo "Top 10 processes by memory usage:" > resource_report.txt
-                            ps aux --sort=-%mem | head -n 10 >> resource_report.txt
+                echo "🔍 กำลังกำหนดการตรวจสอบทรัพยากรหลังจาก deploy..."
+                sh '''
+                    echo "Top 10 processes by memory usage:" > resource_report.txt
+                    ps aux --sort=-%mem | head -n 10 >> resource_report.txt
 
-                            echo "\nMemory usage:" >> resource_report.txt
-                            free -h >> resource_report.txt
+                    echo "\nMemory usage:" >> resource_report.txt
+                    free -h >> resource_report.txt
 
-                            echo "\nSystem performance stats (vmstat):" >> resource_report.txt
-                            vmstat 1 5 >> resource_report.txt
-                        '''
-                    } catch (e) {
-                        echo "เกิดข้อผิดพลาดในการตรวจสอบทรัพยากร: ${e}"
-                    }
-                }
+                    echo "\nSystem performance stats (vmstat):" >> resource_report.txt
+                    vmstat 1 5 >> resource_report.txt
+                '''
             }
             post {
                 success {

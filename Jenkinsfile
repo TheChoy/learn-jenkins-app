@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     environment {
-        NETLIFY_SITE_ID = '0431bf5e-5008-40b5-be82-408babc78afb'
-        NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+        SITE_ID = '0431bf5e-5008-40b5-be82-408babc78afb'
+        AUTH_TOKEN = credentials('netlify-token')
     }
 
     stages {
-        stage('Build') {
+        stage('Pre-Deployment Check') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -15,16 +15,17 @@ pipeline {
                 }
             }
             steps {
-                echo "🔧 Checking required files..."
+                echo "🔧 Verifying necessary files..."
                 sh '''
-                    test -f index.html || (echo "❌ Missing index.html" && exit 1)
-                    test -f netlify/functions/quote.js || (echo "❌ Missing quote function" && exit 1)
-                    echo "✅ Build check passed."
+                    # Checking for essential files
+                    test -f index.html || (echo "❌ index.html is missing!" && exit 1)
+                    test -f netlify/functions/quote.js || (echo "❌ Missing quote.js function" && exit 1)
+                    echo "✅ All required files are present."
                 '''
             }
         }
 
-        stage('Code Linting') {
+        stage('Code Quality Check') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -32,25 +33,25 @@ pipeline {
                 }
             }
             steps {
-                echo "🔍 Running ESLint for code quality check..."
+                echo "🔍 Running ESLint for code quality analysis..."
                 script {
-                    def lintStatus = sh(
+                    def lintResult = sh(
                         script: '''
                             npm install eslint
-                            npx eslint . || echo "❌ Linting errors found!"
+                            npx eslint . || echo "❌ Found linting errors!"
                         ''',
                         returnStatus: true
                     )
-                    if (lintStatus != 0) {
-                        echo "⚠️ Linting completed with errors, but continuing pipeline."
+                    if (lintResult != 0) {
+                        echo "⚠️ Linting finished with errors, but pipeline continues."
                     } else {
-                        echo "✅ Code linting passed."
+                        echo "✅ Code is lint-free."
                     }
                 }
             }
         }
 
-        stage('Security Scan') {
+        stage('Security Audit') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -58,25 +59,25 @@ pipeline {
                 }
             }
             steps {
-                echo "🔒 Running security scan with npm audit..."
+                echo "🔒 Running security audit with npm..."
                 script {
-                    def auditStatus = sh(
+                    def auditResult = sh(
                         script: '''
                             npm install
-                            npm audit --production || echo "❌ Security vulnerabilities found!"
+                            npm audit --production || echo "❌ Security vulnerabilities detected!"
                         ''',
                         returnStatus: true
                     )
-                    if (auditStatus != 0) {
-                        echo "⚠️ Security scan completed with vulnerabilities, but continuing pipeline."
+                    if (auditResult != 0) {
+                        echo "⚠️ Security audit completed with vulnerabilities, but continuing pipeline."
                     } else {
-                        echo "✅ Security scan passed."
+                        echo "✅ Security check passed."
                     }
                 }
             }
         }
 
-        stage('Test') {
+        stage('Unit Test') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -84,14 +85,14 @@ pipeline {
                 }
             }
             steps {
-                echo "🧪 Testing quote function load..."
+                echo "🧪 Verifying if quote function loads correctly..."
                 sh '''
                     node -e "require('./netlify/functions/quote.js'); console.log('✅ Function loaded successfully')"
                 '''
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Netlify') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -103,27 +104,27 @@ pipeline {
                 sh '''
                     npm install netlify-cli
                     node_modules/.bin/netlify deploy \
-                      --auth=$NETLIFY_AUTH_TOKEN \
-                      --site=$NETLIFY_SITE_ID \
+                      --auth=$AUTH_TOKEN \
+                      --site=$SITE_ID \
                       --dir=. \
                       --prod
                 '''
             }
         }
 
-        stage('Post Deploy') {
+        stage('Post-Deployment') {
             steps {
-                echo "✅ Deployment complete! Your app is live."
+                echo "✅ Deployment completed successfully! Your app is live."
             }
         }
     }
 
     post {
         success {
-            echo "🎉 CI/CD pipeline finished successfully."
+            echo "🎉 CI/CD pipeline executed successfully."
         }
         failure {
-            echo "❌ Pipeline failed. Check logs for details."
+            echo "❌ Pipeline failed. Please check the logs."
         }
     }
 }

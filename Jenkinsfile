@@ -15,12 +15,12 @@ pipeline {
                 }
             }
             steps {
-                echo "🔧 Verifying necessary files..."
+                echo "🔧 กำลังกำหนดไฟล์ที่ต้องการ..."
                 sh '''
-                    # Checking for essential files
-                    test -f index.html || (echo "❌ index.html is missing!" && exit 1)
-                    test -f netlify/functions/quote.js || (echo "❌ Missing quote.js function" && exit 1)
-                    echo "✅ All required files are present."
+                    # ตรวจสอบไฟล์ที่จำเป็น
+                    test -f index.html || { echo "❌ ไม่พบไฟล์ index.html!" && exit 1; }
+                    test -f netlify/functions/quote.js || { echo "❌ ขาดฟังก์ชัน quote.js!" && exit 1; }
+                    echo "✅ ไฟล์ครบทุกอย่างแล้ว!"
                 '''
             }
         }
@@ -33,19 +33,19 @@ pipeline {
                 }
             }
             steps {
-                echo "🔍 Running ESLint for code quality analysis..."
+                echo "🔍 กำลังกำหนดคุณภาพโค้ดด้วย ESLint..."
                 script {
                     def lintResult = sh(
                         script: '''
                             npm install eslint
-                            npx eslint . || echo "❌ Found linting errors!"
+                            npx eslint . || echo "❌ พบข้อผิดพลาดในโค้ด!"
                         ''',
                         returnStatus: true
                     )
                     if (lintResult != 0) {
-                        echo "⚠️ Linting finished with errors, but pipeline continues."
+                        echo "⚠️ โค้ดมีข้อผิดพลาด แต่จะทำการรันต่อไปค่ะ"
                     } else {
-                        echo "✅ Code is lint-free."
+                        echo "✅ โค้ดสวยงาม ไม่มีข้อผิดพลาด!"
                     }
                 }
             }
@@ -59,19 +59,19 @@ pipeline {
                 }
             }
             steps {
-                echo "🔒 Running security audit with npm..."
+                echo "🔒 กำลังกำหนดการตรวจสอบความปลอดภัย..."
                 script {
                     def auditResult = sh(
                         script: '''
                             npm install
-                            npm audit --production || echo "❌ Security vulnerabilities detected!"
+                            npm audit --production || echo "❌ พบช่องโหว่ด้านความปลอดภัย!"
                         ''',
                         returnStatus: true
                     )
                     if (auditResult != 0) {
-                        echo "⚠️ Security audit completed with vulnerabilities, but continuing pipeline."
+                        echo "⚠️ ตรวจสอบความปลอดภัยเสร็จแล้ว พบช่องโหว่ แต่จะทำการรันต่อไปค่ะ"
                     } else {
-                        echo "✅ Security check passed."
+                        echo "✅ ไม่มีช่องโหว่ด้านความปลอดภัย!"
                     }
                 }
             }
@@ -85,9 +85,9 @@ pipeline {
                 }
             }
             steps {
-                echo "🧪 Verifying if quote function loads correctly..."
+                echo "🧪 กำลังกำหนดการทดสอบฟังก์ชัน quote.js..."
                 sh '''
-                    node -e "require('./netlify/functions/quote.js'); console.log('✅ Function loaded successfully')"
+                    node -e "require('./netlify/functions/quote.js'); console.log('✅ ฟังก์ชันโหลดสำเร็จแล้วค่ะ')"
                 '''
             }
         }
@@ -100,7 +100,7 @@ pipeline {
                 }
             }
             steps {
-                echo "🚀 Deploying to Netlify..."
+                echo "🚀 กำลังกำหนดการ deploy ไปยัง Netlify..."
                 sh '''
                     npm install netlify-cli
                     node_modules/.bin/netlify deploy \
@@ -114,17 +114,17 @@ pipeline {
 
         stage('Post-Deployment') {
             steps {
-                echo "✅ Deployment completed successfully! Your app is live."
+                echo "✅ การ deploy เสร็จสมบูรณ์ค่ะ เว็บไซต์ของคุณพร้อมใช้งาน!"
             }
         }
     }
 
     post {
         success {
-            echo "🎉 CI/CD pipeline executed successfully."
+            echo "🎉 การทำงานของ CI/CD pipeline สำเร็จเรียบร้อยแล้วค่ะ"
         }
         failure {
-            echo "❌ Pipeline failed. Please check the logs."
+            echo "❌ pipeline ล้มเหลวค่ะ โปรดตรวจสอบ logs"
         }
     }
 }

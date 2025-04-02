@@ -1,8 +1,8 @@
-Started by user admin
-Obtained Jenkinsfile from git https://github.com/gittium/learn-jenkins-app.git
+Started by user TheChoy
+Obtained Jenkinsfile from git https://github.com/TheChoy/learn-jenkins-app.git
 [Pipeline] Start of Pipeline
 [Pipeline] node
-Running on Jenkins in /var/jenkins_home/workspace/jenkintestdocker
+Running on Jenkins in /var/jenkins_home/workspace/dockerpip
 [Pipeline] {
 [Pipeline] stage
 [Pipeline] { (Declarative: Checkout SCM)
@@ -10,25 +10,25 @@ Running on Jenkins in /var/jenkins_home/workspace/jenkintestdocker
 Selected Git installation does not exist. Using Default
 The recommended git tool is: NONE
 No credentials specified
- > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/jenkintestdocker/.git # timeout=10
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/dockerpip/.git # timeout=10
 Fetching changes from the remote Git repository
- > git config remote.origin.url https://github.com/gittium/learn-jenkins-app.git # timeout=10
-Fetching upstream changes from https://github.com/gittium/learn-jenkins-app.git
+ > git config remote.origin.url https://github.com/TheChoy/learn-jenkins-app.git # timeout=10
+Fetching upstream changes from https://github.com/TheChoy/learn-jenkins-app.git
  > git --version # timeout=10
  > git --version # 'git version 2.39.5'
- > git fetch --tags --force --progress -- https://github.com/gittium/learn-jenkins-app.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git fetch --tags --force --progress -- https://github.com/TheChoy/learn-jenkins-app.git +refs/heads/*:refs/remotes/origin/* # timeout=10
  > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
-Checking out Revision 31b0fb40b51142f31de9d947fb9b83be1d635954 (refs/remotes/origin/main)
+Checking out Revision c7ec2c65aa01e8304c48f0bcfec3a9ef48842077 (refs/remotes/origin/main)
  > git config core.sparsecheckout # timeout=10
- > git checkout -f 31b0fb40b51142f31de9d947fb9b83be1d635954 # timeout=10
-Commit message: "add quote"
- > git rev-list --no-walk 31b0fb40b51142f31de9d947fb9b83be1d635954 # timeout=10
+ > git checkout -f c7ec2c65aa01e8304c48f0bcfec3a9ef48842077 # timeout=10
+Commit message: "up"
+ > git rev-list --no-walk afb5134e73e8eecde754891f1e1f3f5aea62c4cd # timeout=10
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] withCredentials
-Masking supported pattern matches of $NETLIFY_AUTH_TOKEN
+Masking supported pattern matches of $AUTH_TOKEN
 [Pipeline] {
 [Pipeline] withEnv
 [Pipeline] {
@@ -44,22 +44,178 @@ Masking supported pattern matches of $NETLIFY_AUTH_TOKEN
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] withDockerContainer
-Jenkins seems to be running inside container ddcb0f12784af0dced80afff285edb0840d093124914af904e9a0a49518ffad1
-but /var/jenkins_home/workspace/jenkintestdocker could not be found among []
-but /var/jenkins_home/workspace/jenkintestdocker@tmp could not be found among []
-$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/jenkintestdocker -v /var/jenkins_home/workspace/jenkintestdocker:/var/jenkins_home/workspace/jenkintestdocker:rw,z -v /var/jenkins_home/workspace/jenkintestdocker@tmp:/var/jenkins_home/workspace/jenkintestdocker@tmp:rw,z -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:18-alpine cat
-$ docker top 09d37c4468acbe9903f6900db41c0e8386bba483cb7ec8afd2b7113ce1c9301f -eo pid,comm
+Jenkins seems to be running inside container 50b18d8821588ff3e076ca3ac062b9ba61f7cf26f868fafe6b34231a87aedd32
+but /var/jenkins_home/workspace/dockerpip could not be found among []
+but /var/jenkins_home/workspace/dockerpip@tmp could not be found among []
+$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/dockerpip -v /var/jenkins_home/workspace/dockerpip:/var/jenkins_home/workspace/dockerpip:rw,z -v /var/jenkins_home/workspace/dockerpip@tmp:/var/jenkins_home/workspace/dockerpip@tmp:rw,z -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:18-alpine cat
+$ docker top a8365779b5e433f1378af0beea560fa509964153518cb1472d03df0ea5fe4d41 -eo pid,comm
 [Pipeline] {
 [Pipeline] echo
-🔧 Checking required files...
+🔧 กำลังกำหนดไฟล์ที่ต้องการ...
 [Pipeline] sh
 + test -f index.html
 + test -f netlify/functions/quote.js
-+ echo '✅ Build check passed.'
-✅ Build check passed.
++ echo '✅ ไฟล์ครบทุกอย่างแล้ว!'
+✅ ไฟล์ครบทุกอย่างแล้ว!
 [Pipeline] }
-$ docker stop --time=1 09d37c4468acbe9903f6900db41c0e8386bba483cb7ec8afd2b7113ce1c9301f
-$ docker rm -f --volumes 09d37c4468acbe9903f6900db41c0e8386bba483cb7ec8afd2b7113ce1c9301f
+$ docker stop --time=1 a8365779b5e433f1378af0beea560fa509964153518cb1472d03df0ea5fe4d41
+$ docker rm -f --volumes a8365779b5e433f1378af0beea560fa509964153518cb1472d03df0ea5fe4d41
+[Pipeline] // withDockerContainer
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (QualityCheck)
+[Pipeline] getContext
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker inspect -f . node:18-alpine
+.
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] withDockerContainer
+Jenkins seems to be running inside container 50b18d8821588ff3e076ca3ac062b9ba61f7cf26f868fafe6b34231a87aedd32
+but /var/jenkins_home/workspace/dockerpip could not be found among []
+but /var/jenkins_home/workspace/dockerpip@tmp could not be found among []
+$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/dockerpip -v /var/jenkins_home/workspace/dockerpip:/var/jenkins_home/workspace/dockerpip:rw,z -v /var/jenkins_home/workspace/dockerpip@tmp:/var/jenkins_home/workspace/dockerpip@tmp:rw,z -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:18-alpine cat
+$ docker top 8b1010bac6ef7fde2bcc7988e4621d4b4aa8f7d8371e778656cff70c8774a708 -eo pid,comm
+[Pipeline] {
+[Pipeline] echo
+🔍 กำลังกำหนดคุณภาพโค้ดด้วย ESLint...
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ npm install eslint
+
+removed 1171 packages, changed 87 packages, and audited 153 packages in 11s
+
+31 packages are looking for funding
+  run `npm fund` for details
+
+6 vulnerabilities (3 low, 3 high)
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
++ npx eslint .
+
+Oops! Something went wrong! :(
+
+ESLint: 9.23.0
+
+ESLint couldn't find an eslint.config.(js|mjs|cjs) file.
+
+From ESLint v9.0.0, the default configuration file is now eslint.config.js.
+If you are using a .eslintrc.* file, please follow the migration guide
+to update your configuration file to the new format:
+
+https://eslint.org/docs/latest/use/configure/migration-guide
+
+If you still have problems after following the migration guide, please stop by
+https://eslint.org/chat/help to chat with the team.
+
++ echo '❌ พบข้อผิดพลาดในโค้ด!'
+❌ พบข้อผิดพลาดในโค้ด!
+[Pipeline] echo
+✅ โค้ดสวยงาม ไม่มีข้อผิดพลาด!
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+$ docker stop --time=1 8b1010bac6ef7fde2bcc7988e4621d4b4aa8f7d8371e778656cff70c8774a708
+$ docker rm -f --volumes 8b1010bac6ef7fde2bcc7988e4621d4b4aa8f7d8371e778656cff70c8774a708
+[Pipeline] // withDockerContainer
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Security)
+[Pipeline] getContext
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker inspect -f . node:18-alpine
+.
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] withDockerContainer
+Jenkins seems to be running inside container 50b18d8821588ff3e076ca3ac062b9ba61f7cf26f868fafe6b34231a87aedd32
+but /var/jenkins_home/workspace/dockerpip could not be found among []
+but /var/jenkins_home/workspace/dockerpip@tmp could not be found among []
+$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/dockerpip -v /var/jenkins_home/workspace/dockerpip:/var/jenkins_home/workspace/dockerpip:rw,z -v /var/jenkins_home/workspace/dockerpip@tmp:/var/jenkins_home/workspace/dockerpip@tmp:rw,z -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:18-alpine cat
+$ docker top bd39ff8414e780c8b4d3ee2df41a0087925994ab395c471966c856839e52ce5c -eo pid,comm
+[Pipeline] {
+[Pipeline] echo
+🔒 กำลังกำหนดการตรวจสอบความปลอดภัย...
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ npm install
+
+up to date, audited 153 packages in 5s
+
+31 packages are looking for funding
+  run `npm fund` for details
+
+6 vulnerabilities (3 low, 3 high)
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
++ npm audit --production
+npm warn config production Use `--omit=dev` instead.
+# npm audit report
+
+body-parser  <1.20.3
+Severity: high
+body-parser vulnerable to denial of service when url encoding is enabled - https://github.com/advisories/GHSA-qwcr-r2fm-qrc7
+fix available via `npm audit fix`
+node_modules/body-parser
+  express  <=4.21.1 || 5.0.0-alpha.1 - 5.0.0
+  Depends on vulnerable versions of body-parser
+  Depends on vulnerable versions of cookie
+  Depends on vulnerable versions of path-to-regexp
+  Depends on vulnerable versions of send
+  Depends on vulnerable versions of serve-static
+  node_modules/express
+
+cookie  <0.7.0
+cookie accepts cookie name, path, and domain with out of bounds characters - https://github.com/advisories/GHSA-pxg6-pf52-xh8x
+fix available via `npm audit fix`
+node_modules/cookie
+
+
+path-to-regexp  <=0.1.11
+Severity: high
+Unpatched `path-to-regexp` ReDoS in 0.1.x - https://github.com/advisories/GHSA-rhx6-c78j-4q9w
+path-to-regexp outputs backtracking regular expressions - https://github.com/advisories/GHSA-9wv6-86v2-598j
+fix available via `npm audit fix`
+node_modules/path-to-regexp
+
+send  <0.19.0
+send vulnerable to template injection that can lead to XSS - https://github.com/advisories/GHSA-m6fv-jmcg-4jfg
+fix available via `npm audit fix`
+node_modules/send
+  serve-static  <=1.16.0
+  Depends on vulnerable versions of send
+  node_modules/serve-static
+
+
+6 vulnerabilities (3 low, 3 high)
+
+To address all issues, run:
+  npm audit fix
++ echo '❌ พบช่องโหว่ด้านความปลอดภัย!'
+❌ พบช่องโหว่ด้านความปลอดภัย!
+[Pipeline] echo
+✅ ไม่มีช่องโหว่ด้านความปลอดภัย!
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+$ docker stop --time=1 bd39ff8414e780c8b4d3ee2df41a0087925994ab395c471966c856839e52ce5c
+$ docker rm -f --volumes bd39ff8414e780c8b4d3ee2df41a0087925994ab395c471966c856839e52ce5c
 [Pipeline] // withDockerContainer
 [Pipeline] }
 [Pipeline] // stage
@@ -75,20 +231,20 @@ $ docker rm -f --volumes 09d37c4468acbe9903f6900db41c0e8386bba483cb7ec8afd2b7113
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] withDockerContainer
-Jenkins seems to be running inside container ddcb0f12784af0dced80afff285edb0840d093124914af904e9a0a49518ffad1
-but /var/jenkins_home/workspace/jenkintestdocker could not be found among []
-but /var/jenkins_home/workspace/jenkintestdocker@tmp could not be found among []
-$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/jenkintestdocker -v /var/jenkins_home/workspace/jenkintestdocker:/var/jenkins_home/workspace/jenkintestdocker:rw,z -v /var/jenkins_home/workspace/jenkintestdocker@tmp:/var/jenkins_home/workspace/jenkintestdocker@tmp:rw,z -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:18-alpine cat
-$ docker top 7fdc9951d8e8dd0ef52a61c615aa7928b68a3c4a7a9485debb2a91eee73cb2f9 -eo pid,comm
+Jenkins seems to be running inside container 50b18d8821588ff3e076ca3ac062b9ba61f7cf26f868fafe6b34231a87aedd32
+but /var/jenkins_home/workspace/dockerpip could not be found among []
+but /var/jenkins_home/workspace/dockerpip@tmp could not be found among []
+$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/dockerpip -v /var/jenkins_home/workspace/dockerpip:/var/jenkins_home/workspace/dockerpip:rw,z -v /var/jenkins_home/workspace/dockerpip@tmp:/var/jenkins_home/workspace/dockerpip@tmp:rw,z -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:18-alpine cat
+$ docker top afc221232952683904e0307bbb80f6facd7021705aa0eb6a5d2970e087321f09 -eo pid,comm
 [Pipeline] {
 [Pipeline] echo
-🧪 Testing quote function load...
+🧪 กำลังกำหนดการทดสอบฟังก์ชัน quote.js...
 [Pipeline] sh
-+ node -e 'require('"'"'./netlify/functions/quote.js'"'"'); console.log('"'"'✅ Function loaded successfully'"'"')'
-✅ Function loaded successfully
++ node -e 'require('"'"'./netlify/functions/quote.js'"'"'); console.log('"'"'✅ ฟังก์ชันโหลดสำเร็จแล้วค่ะ'"'"')'
+✅ ฟังก์ชันโหลดสำเร็จแล้วค่ะ
 [Pipeline] }
-$ docker stop --time=1 7fdc9951d8e8dd0ef52a61c615aa7928b68a3c4a7a9485debb2a91eee73cb2f9
-$ docker rm -f --volumes 7fdc9951d8e8dd0ef52a61c615aa7928b68a3c4a7a9485debb2a91eee73cb2f9
+$ docker stop --time=1 afc221232952683904e0307bbb80f6facd7021705aa0eb6a5d2970e087321f09
+$ docker rm -f --volumes afc221232952683904e0307bbb80f6facd7021705aa0eb6a5d2970e087321f09
 [Pipeline] // withDockerContainer
 [Pipeline] }
 [Pipeline] // stage
@@ -104,21 +260,25 @@ $ docker rm -f --volumes 7fdc9951d8e8dd0ef52a61c615aa7928b68a3c4a7a9485debb2a91e
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] withDockerContainer
-Jenkins seems to be running inside container ddcb0f12784af0dced80afff285edb0840d093124914af904e9a0a49518ffad1
-but /var/jenkins_home/workspace/jenkintestdocker could not be found among []
-but /var/jenkins_home/workspace/jenkintestdocker@tmp could not be found among []
-$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/jenkintestdocker -v /var/jenkins_home/workspace/jenkintestdocker:/var/jenkins_home/workspace/jenkintestdocker:rw,z -v /var/jenkins_home/workspace/jenkintestdocker@tmp:/var/jenkins_home/workspace/jenkintestdocker@tmp:rw,z -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:18-alpine cat
-$ docker top 956a0741f75ed5bf624fa5b6de72fda4711172bf7ce6c31bd21bc64bcdea92d5 -eo pid,comm
+Jenkins seems to be running inside container 50b18d8821588ff3e076ca3ac062b9ba61f7cf26f868fafe6b34231a87aedd32
+but /var/jenkins_home/workspace/dockerpip could not be found among []
+but /var/jenkins_home/workspace/dockerpip@tmp could not be found among []
+$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/dockerpip -v /var/jenkins_home/workspace/dockerpip:/var/jenkins_home/workspace/dockerpip:rw,z -v /var/jenkins_home/workspace/dockerpip@tmp:/var/jenkins_home/workspace/dockerpip@tmp:rw,z -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:18-alpine cat
+$ docker top 638dad36ef2852290e90b808c2dfcea64311ad53651b3fe27dfb893e83b63dc4 -eo pid,comm
 [Pipeline] {
 [Pipeline] echo
-🚀 Deploying to Netlify...
+🚀 กำลังกำหนดการ deploy ไปยัง Netlify...
 [Pipeline] sh
 + npm install netlify-cli
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated npmlog@5.0.1: This package is no longer supported.
+npm warn deprecated gauge@3.0.2: This package is no longer supported.
+npm warn deprecated are-we-there-yet@2.0.0: This package is no longer supported.
 npm warn deprecated glob@8.1.0: Glob versions prior to v9 are no longer supported
 
-changed 1174 packages, and audited 1244 packages in 35s
+added 1170 packages, and audited 1326 packages in 1m
 
-262 packages are looking for funding
+275 packages are looking for funding
   run `npm fund` for details
 
 12 vulnerabilities (3 low, 6 moderate, 3 high)
@@ -127,10 +287,10 @@ To address all issues, run:
   npm audit fix
 
 Run `npm audit` for details.
-+ node_modules/.bin/netlify deploy '--auth=****' '--site=42dd4a42-af36-4c76-80fe-2ee8c85ccffe' '--dir=.' --prod
-Deploy path:        /var/jenkins_home/workspace/jenkintestdocker
-Functions path:     /var/jenkins_home/workspace/jenkintestdocker/netlify/functions
-Configuration path: /var/jenkins_home/workspace/jenkintestdocker/netlify.toml
++ node_modules/.bin/netlify deploy '--auth=****' '--site=0431bf5e-5008-40b5-be82-408babc78afb' '--dir=.' --prod
+Deploy path:        /var/jenkins_home/workspace/dockerpip
+Functions path:     /var/jenkins_home/workspace/dockerpip/netlify/functions
+Configuration path: /var/jenkins_home/workspace/dockerpip/netlify.toml
 Deploying to main site URL...
 [33m⠋[39m Uploading blobs to deploy store...
 
@@ -139,23 +299,23 @@ Netlify Build
 ────────────────────────────────────────────────────────────────
 ​
 ❯ Version
-  @netlify/build 30.0.3
+  @netlify/build 30.0.6
 ​
 ❯ Flags
   auth: ****
-  deployId: 67e3e01cb3d3830431fef6d3
+  deployId: 67ed7c92f5e94a00799f09d7
   dir: .
   open: false
   prod: true
   prodIfUnlocked: false
-  site: 42dd4a42-af36-4c76-80fe-2ee8c85ccffe
+  site: 0431bf5e-5008-40b5-be82-408babc78afb
   skipFunctionsCache: false
 ​
 ❯ Current directory
-  /var/jenkins_home/workspace/jenkintestdocker
+  /var/jenkins_home/workspace/dockerpip
 ​
 ❯ Config file
-  /var/jenkins_home/workspace/jenkintestdocker/netlify.toml
+  /var/jenkins_home/workspace/dockerpip/netlify.toml
 ​
 ❯ Context
   dev
@@ -163,7 +323,7 @@ Netlify Build
 [33m⠋[39m Hashing files...
 [33m⠋[39m Looking for a functions cache...
 [33m⠙[39m No cached functions were found
-[33m⠙[39m Finished hashing 42 files and 1 functions
+[33m⠙[39m Finished hashing 61 files and 1 functions
 [33m⠋[39m CDN diffing files...
 [33m⠙[39m CDN requesting 0 files and 0 functions
 [33m⠋[39m Uploading 0 files
@@ -171,27 +331,97 @@ Netlify Build
 [33m⠋[39m Waiting for deploy to go live...
 [33m⠙[39m Deploy is live!
 
-Build logs:         https://app.netlify.com/sites/guileless-kleicha-7e7bf3/deploys/67e3e01cb3d3830431fef6d3
-Function logs:      https://app.netlify.com/sites/guileless-kleicha-7e7bf3/logs/functions
-Edge function Logs: https://app.netlify.com/sites/guileless-kleicha-7e7bf3/logs/edge-functions
-Unique deploy URL:  https://67e3e01cb3d3830431fef6d3--guileless-kleicha-7e7bf3.netlify.app
-Website URL:        https://guileless-kleicha-7e7bf3.netlify.app
+Build logs:         https://app.netlify.com/sites/heartfelt-mandazi-1d350d/deploys/67ed7c92f5e94a00799f09d7
+Function logs:      https://app.netlify.com/sites/heartfelt-mandazi-1d350d/logs/functions
+Edge function Logs: https://app.netlify.com/sites/heartfelt-mandazi-1d350d/logs/edge-functions
+Unique deploy URL:  https://67ed7c92f5e94a00799f09d7--heartfelt-mandazi-1d350d.netlify.app
+Website URL:        https://heartfelt-mandazi-1d350d.netlify.app
 [Pipeline] }
-$ docker stop --time=1 956a0741f75ed5bf624fa5b6de72fda4711172bf7ce6c31bd21bc64bcdea92d5
-$ docker rm -f --volumes 956a0741f75ed5bf624fa5b6de72fda4711172bf7ce6c31bd21bc64bcdea92d5
+$ docker stop --time=1 638dad36ef2852290e90b808c2dfcea64311ad53651b3fe27dfb893e83b63dc4
+$ docker rm -f --volumes 638dad36ef2852290e90b808c2dfcea64311ad53651b3fe27dfb893e83b63dc4
 [Pipeline] // withDockerContainer
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] stage
-[Pipeline] { (Post Deploy)
+[Pipeline] { (Post-Deployment)
 [Pipeline] echo
-✅ Deployment complete! Your app is live.
+✅ การ deploy เสร็จสมบูรณ์ค่ะ เว็บไซต์ของคุณพร้อมใช้งาน!
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Post Deploy - Resource Monitoring)
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/dockerpip@2
+[Pipeline] {
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/dockerpip@2/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/TheChoy/learn-jenkins-app.git # timeout=10
+Fetching upstream changes from https://github.com/TheChoy/learn-jenkins-app.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.39.5'
+ > git fetch --tags --force --progress -- https://github.com/TheChoy/learn-jenkins-app.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision c7ec2c65aa01e8304c48f0bcfec3a9ef48842077 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f c7ec2c65aa01e8304c48f0bcfec3a9ef48842077 # timeout=10
+Commit message: "up"
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] echo
+🔍 กำลังกำหนดการตรวจสอบทรัพยากรหลังจาก deploy...
+[Pipeline] sh
++ echo Top 10 processes by memory usage:
++ ps aux --sort=-%mem
++ head -n 10
++ echo 
+Memory usage:
++ free -h
++ echo 
+System performance stats (vmstat):
++ vmstat 1 5
+Post stage
+[Pipeline] echo
+✅ การตรวจสอบทรัพยากรเสร็จสมบูรณ์แล้ว!
+[Pipeline] sh
++ cat resource_report.txt
+Top 10 processes by memory usage:
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+jenkins      7  2.7 15.0 9983940 1216064 ?     Sl   14:55   5:16 java -Duser.home=/var/jenkins_home -Djenkins.model.Jenkins.slaveAgentPort=50000 -Dhudson.lifecycle=hudson.lifecycle.ExitLifecycle -jar /usr/share/jenkins/jenkins.war
+jenkins  14666  0.0  0.0   8488  4096 ?        R    18:05   0:00 ps aux --sort=-%mem
+jenkins  14667  0.0  0.0   2908   944 ?        S    18:05   0:00 sleep 3
+jenkins  14664  0.0  0.0   2580   908 ?        S    18:05   0:00 sh -xe /var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/script.sh.copy
+jenkins  14668  0.0  0.0   2916   900 ?        S    18:05   0:00 head -n 10
+jenkins      1  0.0  0.0   2476   884 ?        Ss   14:55   0:00 /usr/bin/tini -- /usr/local/bin/jenkins.sh
+jenkins  14663  0.0  0.0   2580   116 ?        S    18:05   0:00 sh -c (cp '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/script.sh' '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/script.sh.copy'; { while [ -d '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642' -a \! -f '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/jenkins-result.txt' ]; do touch '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/jenkins-log.txt'; sleep 3; done } & jsc=durable-138d7a1885b660982b7d1b43b1a85062e7b83b427ec680e6c9cdc17d1d5e6101; JENKINS_SERVER_COOKIE=$jsc 'sh' -xe  '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/script.sh.copy' > '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/jenkins-log.txt' 2>&1; echo $? > '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/jenkins-result.txt.tmp'; mv '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/jenkins-result.txt.tmp' '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/jenkins-result.txt'; wait) >&- 2>&- &
+jenkins  14661  0.0  0.0   2580   112 ?        S    18:05   0:00 sh -c (cp '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/script.sh' '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/script.sh.copy'; { while [ -d '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642' -a \! -f '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/jenkins-result.txt' ]; do touch '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/jenkins-log.txt'; sleep 3; done } & jsc=durable-138d7a1885b660982b7d1b43b1a85062e7b83b427ec680e6c9cdc17d1d5e6101; JENKINS_SERVER_COOKIE=$jsc 'sh' -xe  '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/script.sh.copy' > '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/jenkins-log.txt' 2>&1; echo $? > '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/jenkins-result.txt.tmp'; mv '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/jenkins-result.txt.tmp' '/var/jenkins_home/workspace/dockerpip@2@tmp/durable-0fda8642/jenkins-result.txt'; wait) >&- 2>&- &
+
+Memory usage:
+               total        used        free      shared  buff/cache   available
+Mem:           7.7Gi       2.3Gi       4.5Gi       5.9Mi       1.2Gi       5.4Gi
+Swap:          2.0Gi          0B       2.0Gi
+
+System performance stats (vmstat):
+procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+ 1  0      0 4675856 184952 1124928    0    0    15   128  100  319  1  1 98  0  0
+ 1  0      0 4675856 184952 1124928    0    0     0    92  129 1006  0  0 100  0  0
+ 1  0      0 4675856 184952 1124928    0    0     0     0   68  664  0  0 100  0  0
+ 1  0      0 4675856 184952 1124928    0    0     0     0   78  630  0  0 100  0  0
+ 1  0      0 4675856 184952 1124928    0    0     0     0   78  726  0  0 100  0  0
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] stage
 [Pipeline] { (Declarative: Post Actions)
 [Pipeline] echo
-🎉 CI/CD pipeline finished successfully.
+🎉 การทำงานของ CI/CD pipeline สำเร็จเรียบร้อยแล้วค่ะ
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] }

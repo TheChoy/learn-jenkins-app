@@ -1,23 +1,93 @@
-<!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>💬 คำคมสร้างแรงบันดาลใจ</title>
-  <link rel="stylesheet" href="style.css" />
+    <title>Recipes Madam Aoi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div class="container">
-    <h1>☀️ คำคมประจำวัน</h1>
-    <p id="quote">คลิกปุ่มด้านล่างเพื่อรับแรงบันดาลใจใหม่ๆ</p>
-    <button onclick="getQuote()">✨ รับคำคม</button>
-  </div>
+<body style="background-color: #ceac8a76;">
+    <!--header-->
+    <header>
+        <input type="checkbox" name="" id="toggler">
+        <label for="toggler" class="fas fa-bars"></label>
 
-  <script>
-    async function getQuote() {
-      const res = await fetch('/.netlify/functions/quote');
-      const data = await res.json();
-      document.getElementById('quote').textContent = `“${data.quote}”`;
-    }
-  </script>
+        <a href="Home.html" class="logo">Recipes<span></span></a>
+
+        <nav class="navbar">
+            <a href="Home.html"> home</a>
+            <a href="Food.html">Food</a>
+            <a href="Dessert.html">Dessert</a>
+            <a href="Beverage.html">Beverage</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+
+        <div class="icons">
+            <a href="#" class="fa-regular fa-comments"></a>
+            <a href="me.html" class="fas fa-user"></a>
+            <a href="#" class="fa-solid fa-gear"></a>
+        </div>
+    </header>
+
+    <!--home-->
+    <section class="home" id="home">
+        <div class="content" style="border-radius: .7rem " >
+            <h3>Madam Aoi</h3>
+            <span>Redipes Recommend</span>
+            <p>&nbsp; &nbsp; Lorem ipsum, dolor sit amet consectetur adipisicing elit. Harum voluptatibus autem doloribus asperiores quae minima sed, libero illo facilis suscipit, a dolorem saepe voluptatem vitae sunt error et placeat quod.</p>
+            <a href="#Recommend" class="btn">viwe now</a>
+        </div>
+    </section> 
+
+    <section class="Recommend" id="Recommend">
+
+        <h1 class="heading"><span>Recipes</span> Recommend</h1>
+
+        <div class="row">
+            <div class="video-container">
+                <video src="image/kimji.mp4"loop autoplay muted></video>
+                <h3>best food</h3>
+            </div><br><br>
+            <div class="content">
+                <h3>Kimchi Soup</h3>
+                <p>&nbsp;&nbsp;Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque laborum accusamus, deserunt possimus eaque voluptatum soluta quasi amet? Eligendi modi inventore excepturi aspernatur nostrum. Aperiam quisquam repellat sequi nemo earum!</p>
+                <p>&nbsp;&nbsp;Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi nemo labore aut, consectetur dignissimos ducimus exercitationem perspiciatis amet cumque possimus magni praesentium? Ut tempora quis necessitatibus commodi, nobis quam sit.</p>
+                <a href="https://www.pholfoodmafia.com/recipe/kimchi-soup-ซุปกิมจิ/" target="_black" class="btn">viwe now</a>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="icons-contaner">
+        <div class="icons">
+            <img src="image/food6.jpg" alt="" >
+            <div class="info">
+                <h3>Rice Cooker Chicken Rice</h3>
+                <a href="Food.html">viwe now</a>
+            </div>
+        </div>   
+
+        <div class="icons">
+            <img src="image/desert.jpg" alt="" >
+            <div class="info">
+                <h3>Coconut milk ice cream</h3>
+                <a href="Dessert.html">viwe now</a>
+            </div>
+        </div>
+
+        <div class="icons">
+            <img src="image/beverage.jpg" alt="" >
+            <div class="info">
+                <h3>Pink Party Punch</h3>
+                <a href="Beverage.html">viwe now</a>
+            </div>
+        </div>
+
+        <div class="icons">
+            <img src="image/food4.jpg" alt="" >
+            <div class="info">
+                <h3>Eggplant Katsu Curry</h3>
+                <a href="Food.html">viwe now</a>
+            </div>
+        </div>
+    </section>
 </body>
 </html>

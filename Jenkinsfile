@@ -18,9 +18,9 @@ pipeline {
                 script {
                     echo "🔧 กำลังเตรียมโปรเจค..."
                     try {
+                        // ติดตั้ง dependencies ที่จำเป็น
                         sh '''
-                        # ใช้ npm ci เพื่อการติดตั้ง dependencies ที่ถูกต้องจาก package-lock.json
-                        npm ci
+                        npm install --silent
                         '''
                     } catch (e) {
                         echo "❌ การติดตั้ง dependencies ล้มเหลว: ${e.getMessage()}"
@@ -81,8 +81,7 @@ pipeline {
                     echo "🧪 กำลังทดสอบโปรเจค..."
                     try {
                         sh '''
-                        # รันการทดสอบ
-                        npm test
+                        npm test --silent
                         '''
                     } catch (e) {
                         echo "❌ การทดสอบล้มเหลว: ${e.getMessage()}"
@@ -111,7 +110,6 @@ pipeline {
                 script {
                     echo "🚀 กำลัง deploy ไปที่ Netlify..."
                     try {
-                        // แนะนำให้ติดตั้ง netlify-cli ใน package.json
                         sh '''
                         npm install netlify-cli --save-dev
                         npx netlify deploy --prod --dir=build \
@@ -141,7 +139,6 @@ pipeline {
                     echo "🔍 กำลังตรวจสอบทรัพยากรเซิร์ฟเวอร์หลังจากการ deploy..."
                     try {
                         sh '''
-                        # ตรวจสอบการใช้ทรัพยากรของระบบ
                         echo "Top 10 processes by memory usage:" > resource_report.txt
                         ps aux --sort=-%mem | head -n 10 >> resource_report.txt
                         

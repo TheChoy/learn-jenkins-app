@@ -8,34 +8,22 @@ pipeline {
 
     stages {
         stage('Build') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
             steps {
                 echo "🔧 Verifying necessary files..."
                 sh '''
-                    # ตรวจสอบเวอร์ชันของ node และ npm
-                    node -v
-                    npm -v
-
-                    # ตรวจสอบว่าไฟล์ที่จำเป็นมีหรือไม่
+                    # Checking for essential files
                     test -f index.html || { echo "❌ index.html is missing!" && exit 1; }
                     test -f netlify/functions/quote.js || { echo "❌ Missing quote.js function" && exit 1; }
                     echo "✅ All required files are present."
+
+                    # Print Node and npm versions for verification
+                    node -v
+                    npm -v
                 '''
             }
         }
 
-        stage('Code Quality Check') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
+        stage('Quality Check') {
             steps {
                 echo "🔍 Running ESLint for code quality analysis..."
                 script {
@@ -55,13 +43,7 @@ pipeline {
             }
         }
 
-        stage('Security Audit') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
+        stage('Security') {
             steps {
                 echo "🔒 Running security audit with npm..."
                 script {
@@ -82,12 +64,6 @@ pipeline {
         }
 
         stage('Test') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
             steps {
                 echo "🧪 Verifying if quote function loads correctly..."
                 sh '''
@@ -97,24 +73,15 @@ pipeline {
         }
 
         stage('Deploy') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
             steps {
                 echo "🚀 Deploying to Netlify..."
                 sh '''
-                    # ตรวจสอบว่า netlify-cli ติดตั้งแล้ว
-                    which netlify-cli || { echo "❌ netlify-cli not found!" && exit 1; }
-
-                    npm install netlify-cli --save-dev  # ติดตั้ง netlify-cli
+                    npm install netlify-cli
                     node_modules/.bin/netlify deploy \
-                        --auth=$AUTH_TOKEN \
-                        --site=$SITE_ID \
-                        --dir=. \
-                        --prod
+                      --auth=$AUTH_TOKEN \
+                      --site=$SITE_ID \
+                      --dir=. \
+                      --prod
                 '''
             }
         }

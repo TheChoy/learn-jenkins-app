@@ -117,6 +117,32 @@ pipeline {
                 echo "✅ การ deploy เสร็จสมบูรณ์ค่ะ เว็บไซต์ของคุณพร้อมใช้งาน!"
             }
         }
+
+        stage('Post Deploy - Resource Monitoring') {
+            agent any
+            steps {
+                echo "🔍 กำลังกำหนดการตรวจสอบทรัพยากรหลังจาก deploy..."
+                sh '''
+                    echo "Top 10 processes by memory usage:" > resource_report.txt
+                    ps aux --sort=-%mem | head -n 10 >> resource_report.txt
+
+                    echo "\nMemory usage:" >> resource_report.txt
+                    free -h >> resource_report.txt
+
+                    echo "\nSystem performance stats (vmstat):" >> resource_report.txt
+                    vmstat 1 5 >> resource_report.txt
+                '''
+            }
+            post {
+                success {
+                    echo "✅ การตรวจสอบทรัพยากรเสร็จสมบูรณ์แล้ว!"
+                    sh 'cat resource_report.txt'  // แสดงข้อมูลที่บันทึกไว้
+                }
+                failure {
+                    echo "❌ การตรวจสอบทรัพยากรพบข้อผิดพลาด!"
+                }
+            }
+        }
     }
 
     post {

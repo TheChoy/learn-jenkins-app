@@ -8,22 +8,30 @@ pipeline {
 
     stages {
         stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
                 echo "🔧 Verifying necessary files..."
                 sh '''
                     # Checking for essential files
-                    test -f index.html || { echo "❌ index.html is missing!" && exit 1; }
-                    test -f netlify/functions/quote.js || { echo "❌ Missing quote.js function" && exit 1; }
+                    test -f index.html || (echo "❌ index.html is missing!" && exit 1)
+                    test -f netlify/functions/quote.js || (echo "❌ Missing quote.js function" && exit 1)
                     echo "✅ All required files are present."
-
-                    # Print Node and npm versions for verification
-                    node -v
-                    npm -v
                 '''
             }
         }
 
-        stage('Quality Check') {
+        stage('Code Quality Check') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
                 echo "🔍 Running ESLint for code quality analysis..."
                 script {
@@ -43,7 +51,13 @@ pipeline {
             }
         }
 
-        stage('Security') {
+        stage('Security Audit') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
                 echo "🔒 Running security audit with npm..."
                 script {
@@ -64,6 +78,12 @@ pipeline {
         }
 
         stage('Test') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
                 echo "🧪 Verifying if quote function loads correctly..."
                 sh '''
@@ -73,6 +93,12 @@ pipeline {
         }
 
         stage('Deploy') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
                 echo "🚀 Deploying to Netlify..."
                 sh '''
@@ -96,11 +122,9 @@ pipeline {
     post {
         success {
             echo "🎉 CI/CD pipeline executed successfully."
-            // Optional: Send Slack notification here or email
         }
         failure {
             echo "❌ Pipeline failed. Please check the logs."
-            // Optional: Send failure notification to Slack or email
         }
     }
 }

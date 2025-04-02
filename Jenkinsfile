@@ -70,9 +70,16 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo "🚀 กำลังทำการ deploy ไปยัง Netlify..."
+                echo "🚀 กำลังกำหนดการ deploy ไปยัง Netlify..."
                 sh '''
-                    npm ci
+                    # ตรวจสอบว่า node และ npm ติดตั้งได้หรือไม่
+                    node -v
+                    npm -v
+
+                    # ติดตั้ง netlify-cli ก่อนใช้งาน
+                    npm install netlify-cli --save-dev
+
+                    # ใช้ npx เพื่อเรียกคำสั่ง netlify-cli
                     npx netlify-cli deploy \
                         --auth=$AUTH_TOKEN \
                         --site=$SITE_ID \
@@ -80,7 +87,8 @@ pipeline {
                         --prod
                 '''
             }
-        }
+}
+
 
         stage('Post-Deployment') {
             steps {
